@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortify</title>
+</head>
+<body>
+    <h1>Shortify</h1>
+    <form id="shortenerForm">
+        <label for="urlInput">Введите URL:</label>
+        <input type="text" id="urlInput" placeholder="https://example.com" required>
+        <button type="submit">Обработать</button>
+    </form>
+    <div id="result"></div>
+    <div id="error" style="color: red;"></div>
+
+    <script>
+        document.getElementById('shortenerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const urlInput = document.getElementById('urlInput').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+
+            resultDiv.textContent = '';
+            errorDiv.textContent = '';
+
+            try {
+                const response = await fetch('http://localhost:8081/get-short', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: urlInput }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка');
+                }
+
+                const data = await response.json();
+                resultDiv.textContent = `Короткий URL: ${data.short_url}`;
+            } catch (error) {
+                errorDiv.textContent = `Ошибка: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
